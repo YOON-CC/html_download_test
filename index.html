@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  #targetDiv {
+    position: absolute;
+    top:35%;
+    left:50%;
+    transform: translate(-50%);
+    width: 200px;
+    height : 200px;
+    background-color: red;
+    padding: 20px;
+    font-size: 18px;
+    color: white;
+    animation: colorChange 3s infinite alternate;
+  }
+  #childDiv{
+    position: absolute;
+    background-color: aqua;
+    width: 50%;
+    height: 50%;
+
+    top:50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  } 
+
+  @keyframes colorChange {
+    from {
+      background-color: red;
+    }
+    to {
+      background-color: blue;
+    }
+  }
+</style>
+<title>Download Example</title>
+</head>
+<body>
+<div id="targetDiv">
+  <p>Hello</p>
+  <div id = "childDiv"></div>
+</div>
+<div>이거는 출력되면 안된다.</div>
+<button id="downloadButton">Download HTML</button>
+
+<script>
+  const downloadButton = document.getElementById('downloadButton');
+  const targetDiv = document.getElementById('targetDiv');
+  const additionalCss = `
+    #targetDiv {
+      position: absolute;
+      top:0%;
+      left:0%;
+      transform: translate(0%);
+      width: 100%;
+      height : 100%;
+      padding: 0;
+    }
+  `;
+  
+  downloadButton.addEventListener('click', () => {
+    const defaultCss = document.head.querySelector('style').innerHTML;
+    const customStyle = `
+      <style>
+        ${defaultCss}
+        ${additionalCss}
+      </style>
+    `;
+    
+    const content = targetDiv.outerHTML.replace('</div>', `</div>${customStyle}`);
+    
+    const blob = new Blob([content], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'downloaded_content.html';
+    a.click();
+    
+    URL.revokeObjectURL(url);
+  });
+</script>
+</body>
+</html>
